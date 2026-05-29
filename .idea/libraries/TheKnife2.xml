@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="TheKnife2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/TheKnife_jar/TheKnife.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

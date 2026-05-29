@@ -1,0 +1,19 @@
+Progetto: TheKnife
+Autore:Hamdar Youssef
+Matricola: 753832
+Sede: Como
+
+Autore: Dellatorre Federico
+Matricola:755856
+Sede: como
+
+
+
+link al 
+repository GitHub di progetto:
+
+https://github.com/YoussefHamdar/TheKnife.git
+
+
+
+
