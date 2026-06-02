@@ -22,7 +22,7 @@ public class ClientTK {
                     new InputStreamReader(socket.getInputStream())
             );
 
-            output.println("LOGIN|mario.rossi|password");
+            output.println("CERCA_RISTORANTI|Como");
 
             String risposta = input.readLine();
 

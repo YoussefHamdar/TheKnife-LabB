@@ -80,4 +80,45 @@ public class RistoranteDAO {
 
         return ristoranti;
     }
+
+    public List<Ristorante> cercaPerCitta(String citta) {
+        List<Ristorante> ristoranti = new ArrayList<>();
+
+        String sql = "SELECT * FROM ristoranti WHERE LOWER(citta) LIKE LOWER(?) LIMIT 20";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + citta + "%");
+
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    Ristorante r = new Ristorante(
+                            rs.getString("nome"),
+                            rs.getString("citta"),
+                            rs.getInt("stelle"),
+                            rs.getString("tipo_cucina"),
+                            rs.getString("fascia_prezzo"),
+                            rs.getBoolean("delivery_disponibile"),
+                            rs.getBoolean("prenotazione_online_disponibile"),
+                            rs.getInt("prezzo_medio"),
+                            rs.getString("nazione"),
+                            rs.getString("indirizzo"),
+                            rs.getDouble("latitudine"),
+                            rs.getDouble("longitudine"),
+                            rs.getString("gestore")
+                    );
+
+                    ristoranti.add(r);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Errore ricerca ristoranti:");
+            e.printStackTrace();
+        }
+
+        return ristoranti;
+    }
 }
