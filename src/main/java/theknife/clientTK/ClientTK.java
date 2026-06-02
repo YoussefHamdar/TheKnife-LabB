@@ -22,7 +22,7 @@ public class ClientTK {
                     new InputStreamReader(socket.getInputStream())
             );
 
-            output.println("PING");
+            output.println("LOGIN|mario.rossi|password");
 
             String risposta = input.readLine();
 
