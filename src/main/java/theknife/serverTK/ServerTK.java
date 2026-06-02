@@ -1,9 +1,6 @@
 package theknife.serverTK;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -21,23 +18,11 @@ public class ServerTK {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
 
-                System.out.println("Client connesso: " + clientSocket.getInetAddress());
+                System.out.println("Nuovo client connesso: " + clientSocket.getInetAddress());
 
-                BufferedReader input = new BufferedReader(
-                        new InputStreamReader(clientSocket.getInputStream())
-                );
-
-                PrintWriter output = new PrintWriter(
-                        clientSocket.getOutputStream(),
-                        true
-                );
-
-                String richiesta = input.readLine();
-                System.out.println("Richiesta ricevuta: " + richiesta);
-
-                output.println("Risposta dal server: richiesta ricevuta correttamente");
-
-                clientSocket.close();
+                ClientHandler handler = new ClientHandler(clientSocket);
+                Thread thread = new Thread(handler);
+                thread.start();
             }
 
         } catch (IOException e) {
