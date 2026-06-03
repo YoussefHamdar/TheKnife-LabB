@@ -4,6 +4,9 @@ import theknife.GestioneUtenti;
 import theknife.Ristorante;
 import theknife.RistoranteDAO;
 import theknife.PreferitoDAO;
+import theknife.RecensioneDAO;
+import theknife.Recensione;
+
 import theknife.Utente;
 import theknife.UtenteDAO;
 
@@ -21,6 +24,7 @@ public class ClientHandler implements Runnable {
     private final UtenteDAO utenteDAO;
     private final RistoranteDAO ristoranteDAO;
     private final PreferitoDAO preferitoDAO;
+    private final RecensioneDAO recensioneDAO;
     private final GestioneUtenti gestioneUtenti;
 
     public ClientHandler(Socket clientSocket) {
@@ -28,6 +32,7 @@ public class ClientHandler implements Runnable {
         this.utenteDAO = new UtenteDAO();
         this.ristoranteDAO = new RistoranteDAO();
         this.preferitoDAO = new PreferitoDAO();
+        this.recensioneDAO = new RecensioneDAO();
         this.gestioneUtenti = new GestioneUtenti();
     }
 
@@ -81,8 +86,13 @@ public class ClientHandler implements Runnable {
 
             case "VISUALIZZA_PREFERITI":
                 return gestisciVisualizzaPreferiti(parti);
-            default:
+            case "AGGIUNGI_RECENSIONE":
+                return gestisciAggiungiRecensione(parti);
+            case "VISUALIZZA_RECENSIONI":
+                return gestisciVisualizzaRecensioni(parti);
+                default:
                 return "ERRORE|Comando non riconosciuto";
+
         }
     }
 
@@ -226,5 +236,60 @@ public class ClientHandler implements Runnable {
 
         return "OK|PREFERITI|" +
                 String.join(",", preferiti);
+    }
+    private String gestisciAggiungiRecensione(String[] parti) {
+
+        if (parti.length < 5) {
+            return "ERRORE|Formato recensione non valido";
+        }
+
+        String username = parti[1];
+        String nomeRistorante = parti[2];
+        String testo = parti[3];
+        int stelle = Integer.parseInt(parti[4]);
+
+        Recensione recensione = new Recensione(
+                username,
+                nomeRistorante,
+                testo,
+                stelle,
+                LocalDate.now()
+        );
+
+        boolean ok = recensioneDAO.inserisciRecensione(recensione);
+
+        if (ok) {
+            return "OK|RECENSIONE_AGGIUNTA";
+        }
+
+        return "ERRORE|Impossibile aggiungere recensione";
+    }
+    private String gestisciVisualizzaRecensioni(String[] parti) {
+
+        if (parti.length < 2) {
+            return "ERRORE|Formato richiesta non valido";
+        }
+
+        String nomeRistorante = parti[1];
+
+        List<Recensione> recensioni =
+                recensioneDAO.trovaPerRistorante(nomeRistorante);
+
+        if (recensioni.isEmpty()) {
+            return "OK|RECENSIONI|Nessuna recensione";
+        }
+
+        StringBuilder risposta = new StringBuilder("OK|RECENSIONI");
+
+        for (Recensione r : recensioni) {
+            risposta.append("|")
+                    .append(r.getAutore())
+                    .append(";")
+                    .append(r.getStelle())
+                    .append(";")
+                    .append(r.getTesto().replace("|", " "));
+        }
+
+        return risposta.toString();
     }
 }
