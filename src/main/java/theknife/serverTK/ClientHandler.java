@@ -3,6 +3,7 @@ package theknife.serverTK;
 import theknife.GestioneUtenti;
 import theknife.Ristorante;
 import theknife.RistoranteDAO;
+import theknife.PreferitoDAO;
 import theknife.Utente;
 import theknife.UtenteDAO;
 
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.time.LocalDate;
 import java.util.List;
 
 public class ClientHandler implements Runnable {
@@ -18,12 +20,14 @@ public class ClientHandler implements Runnable {
     private final Socket clientSocket;
     private final UtenteDAO utenteDAO;
     private final RistoranteDAO ristoranteDAO;
+    private final PreferitoDAO preferitoDAO;
     private final GestioneUtenti gestioneUtenti;
 
     public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
         this.utenteDAO = new UtenteDAO();
         this.ristoranteDAO = new RistoranteDAO();
+        this.preferitoDAO = new PreferitoDAO();
         this.gestioneUtenti = new GestioneUtenti();
     }
 
@@ -39,11 +43,8 @@ public class ClientHandler implements Runnable {
                 )
         ) {
             String richiesta = input.readLine();
-
             System.out.println("Richiesta ricevuta dal client: " + richiesta);
-
             String risposta = gestisciRichiesta(richiesta);
-
             output.println(risposta);
 
         } catch (IOException e) {
@@ -69,13 +70,17 @@ public class ClientHandler implements Runnable {
         switch (comando) {
             case "PING":
                 return "OK|PONG";
-
             case "LOGIN":
                 return gestisciLogin(parti);
-
+            case "REGISTRA":
+                return gestisciRegistrazione(parti);
             case "CERCA_RISTORANTI":
                 return gestisciRicercaRistoranti(parti);
+            case "AGGIUNGI_PREFERITO":
+                return gestisciAggiungiPreferito(parti);
 
+            case "VISUALIZZA_PREFERITI":
+                return gestisciVisualizzaPreferiti(parti);
             default:
                 return "ERRORE|Comando non riconosciuto";
         }
@@ -106,13 +111,61 @@ public class ClientHandler implements Runnable {
         return "OK|LOGIN|" + utente.getUsername() + "|" + ruolo;
     }
 
+    private String gestisciRegistrazione(String[] parti) {
+        if (parti.length < 8) {
+            return "ERRORE|Formato registrazione non valido";
+        }
+
+        String nome = parti[1];
+        String cognome = parti[2];
+        String username = parti[3];
+        String password = parti[4];
+        String ruolo = parti[5];
+        String domicilio = parti[6];
+        String dataNascitaString = parti[7];
+
+        if (utenteDAO.cercaPerUsername(username) != null) {
+            return "ERRORE|Username già esistente";
+        }
+
+        boolean isRistoratore = ruolo.equalsIgnoreCase("RISTORATORE");
+
+        LocalDate dataNascita = null;
+        try {
+            if (!dataNascitaString.equalsIgnoreCase("null")) {
+                dataNascita = LocalDate.parse(dataNascitaString);
+            }
+        } catch (Exception e) {
+            return "ERRORE|Data di nascita non valida";
+        }
+
+        String passwordCifrata = gestioneUtenti.cifraPassword(password);
+
+        Utente nuovoUtente = new Utente(
+                nome,
+                cognome,
+                username,
+                passwordCifrata,
+                isRistoratore,
+                domicilio,
+                dataNascita
+        );
+
+        boolean inserito = utenteDAO.inserisciUtente(nuovoUtente);
+
+        if (inserito) {
+            return "OK|REGISTRAZIONE|Utente registrato";
+        } else {
+            return "ERRORE|Registrazione fallita";
+        }
+    }
+
     private String gestisciRicercaRistoranti(String[] parti) {
         if (parti.length < 2) {
             return "ERRORE|Formato ricerca non valido";
         }
 
         String citta = parti[1];
-
         List<Ristorante> risultati = ristoranteDAO.cercaPerCitta(citta);
 
         if (risultati.isEmpty()) {
@@ -133,5 +186,45 @@ public class ClientHandler implements Runnable {
         }
 
         return risposta.toString();
+
+    }
+    private String gestisciAggiungiPreferito(String[] parti) {
+
+        if (parti.length < 3) {
+            return "ERRORE|Formato preferito non valido";
+        }
+
+        String username = parti[1];
+        String nomeRistorante = parti[2];
+
+        boolean ok = preferitoDAO.aggiungiPreferito(
+                username,
+                nomeRistorante
+        );
+
+        if (ok) {
+            return "OK|PREFERITO_AGGIUNTO";
+        }
+
+        return "ERRORE|Impossibile aggiungere preferito";
+    }
+
+    private String gestisciVisualizzaPreferiti(String[] parti) {
+
+        if (parti.length < 2) {
+            return "ERRORE|Formato richiesta non valido";
+        }
+
+        String username = parti[1];
+
+        List<String> preferiti =
+                preferitoDAO.visualizzaPreferiti(username);
+
+        if (preferiti.isEmpty()) {
+            return "OK|PREFERITI|Nessuno";
+        }
+
+        return "OK|PREFERITI|" +
+                String.join(",", preferiti);
     }
 }
