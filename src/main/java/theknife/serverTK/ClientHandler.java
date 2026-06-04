@@ -90,6 +90,8 @@ public class ClientHandler implements Runnable {
                 return gestisciAggiungiRecensione(parti);
             case "VISUALIZZA_RECENSIONI":
                 return gestisciVisualizzaRecensioni(parti);
+            case "RIMUOVI_PREFERITO":
+                return gestisciRimuoviPreferito(parti);
                 default:
                 return "ERRORE|Comando non riconosciuto";
 
@@ -291,5 +293,22 @@ public class ClientHandler implements Runnable {
         }
 
         return risposta.toString();
+    }
+    private String gestisciRimuoviPreferito(String[] parti) {
+
+        if (parti.length < 3) {
+            return "ERRORE|Formato rimozione preferito non valido";
+        }
+
+        String username = parti[1];
+        String nomeRistorante = parti[2];
+
+        boolean ok = preferitoDAO.rimuoviPreferito(username, nomeRistorante);
+
+        if (ok) {
+            return "OK|PREFERITO_RIMOSSO";
+        }
+
+        return "ERRORE|Preferito non trovato";
     }
 }
