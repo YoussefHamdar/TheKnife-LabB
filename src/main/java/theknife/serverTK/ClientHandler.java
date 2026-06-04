@@ -96,6 +96,8 @@ public class ClientHandler implements Runnable {
                 return gestisciEliminaRecensione(parti);
                 case "RIMUOVI_PREFERITO":
                 return gestisciRimuoviPreferito(parti);
+            case "RISPONDI_RECENSIONE":
+                return gestisciRispondiRecensione(parti);
                 default:
                 return "ERRORE|Comando non riconosciuto";
 
@@ -356,6 +358,26 @@ public class ClientHandler implements Runnable {
 
         if (ok) {
             return "OK|RECENSIONE_ELIMINATA";
+        }
+
+        return "ERRORE|Recensione non trovata";
+    }
+    private String gestisciRispondiRecensione(String[] parti) {
+
+        if (parti.length < 3) {
+            return "ERRORE|Formato risposta recensione non valido";
+        }
+
+        int idRecensione = Integer.parseInt(parti[1]);
+        String risposta = parti[2];
+
+        boolean ok = recensioneDAO.rispondiRecensione(
+                idRecensione,
+                risposta
+        );
+
+        if (ok) {
+            return "OK|RISPOSTA_INSERITA";
         }
 
         return "ERRORE|Recensione non trovata";
