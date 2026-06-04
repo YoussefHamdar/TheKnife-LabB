@@ -100,6 +100,8 @@ public class ClientHandler implements Runnable {
                 return gestisciRispondiRecensione(parti);
             case "AGGIUNGI_RISTORANTE":
                 return gestisciAggiungiRistorante(parti);
+            case "VISUALIZZA_RIEPILOGO":
+                return gestisciVisualizzaRiepilogo(parti);
                 default:
                 return "ERRORE|Comando non riconosciuto";
 
@@ -426,5 +428,17 @@ public class ClientHandler implements Runnable {
         }
 
         return "ERRORE|Impossibile aggiungere ristorante";
+    }
+    private String gestisciVisualizzaRiepilogo(String[] parti) {
+
+        if (parti.length < 2) {
+            return "ERRORE|Formato riepilogo non valido";
+        }
+
+        String nomeRistorante = parti[1];
+
+        String riepilogo = ristoranteDAO.visualizzaRiepilogo(nomeRistorante);
+
+        return "OK|RIEPILOGO|" + riepilogo;
     }
 }

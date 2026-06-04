@@ -121,4 +121,34 @@ public class RistoranteDAO {
 
         return ristoranti;
     }
+    public String visualizzaRiepilogo(String nomeRistorante) {
+        String sql = """
+            SELECT COUNT(*) AS numero_recensioni,
+                   COALESCE(AVG(stelle), 0) AS media_stelle
+            FROM recensioni
+            WHERE nome_ristorante = ?
+            """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nomeRistorante);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int numero = rs.getInt("numero_recensioni");
+                    double media = rs.getDouble("media_stelle");
+
+                    return "numero recensioni: " + numero +
+                            ", media stelle: " + String.format("%.2f", media);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Errore riepilogo recensioni:");
+            e.printStackTrace();
+        }
+
+        return "riepilogo non disponibile";
+    }
 }
