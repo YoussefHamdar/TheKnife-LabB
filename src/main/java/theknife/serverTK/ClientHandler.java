@@ -90,7 +90,11 @@ public class ClientHandler implements Runnable {
                 return gestisciAggiungiRecensione(parti);
             case "VISUALIZZA_RECENSIONI":
                 return gestisciVisualizzaRecensioni(parti);
-            case "RIMUOVI_PREFERITO":
+            case "MODIFICA_RECENSIONE":
+                return gestisciModificaRecensione(parti);
+            case "ELIMINA_RECENSIONE":
+                return gestisciEliminaRecensione(parti);
+                case "RIMUOVI_PREFERITO":
                 return gestisciRimuoviPreferito(parti);
                 default:
                 return "ERRORE|Comando non riconosciuto";
@@ -310,5 +314,50 @@ public class ClientHandler implements Runnable {
         }
 
         return "ERRORE|Preferito non trovato";
+    }
+    private String gestisciModificaRecensione(String[] parti) {
+
+        if (parti.length < 5) {
+            return "ERRORE|Formato modifica recensione non valido";
+        }
+
+        String username = parti[1];
+        String nomeRistorante = parti[2];
+        String nuovoTesto = parti[3];
+        int nuoveStelle = Integer.parseInt(parti[4]);
+
+        boolean ok = recensioneDAO.modificaRecensione(
+                username,
+                nomeRistorante,
+                nuovoTesto,
+                nuoveStelle
+        );
+
+        if (ok) {
+            return "OK|RECENSIONE_MODIFICATA";
+        }
+
+        return "ERRORE|Recensione non trovata";
+    }
+
+    private String gestisciEliminaRecensione(String[] parti) {
+
+        if (parti.length < 3) {
+            return "ERRORE|Formato elimina recensione non valido";
+        }
+
+        String username = parti[1];
+        String nomeRistorante = parti[2];
+
+        boolean ok = recensioneDAO.eliminaRecensione(
+                username,
+                nomeRistorante
+        );
+
+        if (ok) {
+            return "OK|RECENSIONE_ELIMINATA";
+        }
+
+        return "ERRORE|Recensione non trovata";
     }
 }

@@ -41,7 +41,6 @@ public class RecensioneDAO {
 
     public List<Recensione> trovaPerRistorante(String nomeRistorante) {
         List<Recensione> recensioni = new ArrayList<>();
-
         String sql = "SELECT * FROM recensioni WHERE nome_ristorante = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -70,6 +69,51 @@ public class RecensioneDAO {
         }
 
         return recensioni;
+    }
+
+    public boolean modificaRecensione(String autore, String nomeRistorante, String nuovoTesto, int nuoveStelle) {
+        String sql = """
+                UPDATE recensioni
+                SET testo = ?, stelle = ?
+                WHERE autore = ? AND nome_ristorante = ?
+                """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nuovoTesto);
+            stmt.setInt(2, nuoveStelle);
+            stmt.setString(3, autore);
+            stmt.setString(4, nomeRistorante);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Errore modifica recensione:");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean eliminaRecensione(String autore, String nomeRistorante) {
+        String sql = """
+                DELETE FROM recensioni
+                WHERE autore = ? AND nome_ristorante = ?
+                """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, autore);
+            stmt.setString(2, nomeRistorante);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Errore eliminazione recensione:");
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean rispondiRecensione(int idRecensione, String risposta) {
