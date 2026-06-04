@@ -22,7 +22,7 @@ public class ClientTK {
                     new InputStreamReader(socket.getInputStream())
             );
 
-            output.println("RISPONDI_RECENSIONE|1|Grazie per la recensione!");
+            output.println("CERCA_RISTORANTI|Como");
             String risposta = input.readLine();
 
             System.out.println("Risposta ricevuta dal server:");

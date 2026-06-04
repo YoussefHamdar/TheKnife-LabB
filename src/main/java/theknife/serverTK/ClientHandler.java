@@ -98,6 +98,8 @@ public class ClientHandler implements Runnable {
                 return gestisciRimuoviPreferito(parti);
             case "RISPONDI_RECENSIONE":
                 return gestisciRispondiRecensione(parti);
+            case "AGGIUNGI_RISTORANTE":
+                return gestisciAggiungiRistorante(parti);
                 default:
                 return "ERRORE|Comando non riconosciuto";
 
@@ -381,5 +383,48 @@ public class ClientHandler implements Runnable {
         }
 
         return "ERRORE|Recensione non trovata";
+    }
+    private String gestisciAggiungiRistorante(String[] parti) {
+
+        if (parti.length < 13) {
+            return "ERRORE|Formato aggiunta ristorante non valido";
+        }
+
+        String nome = parti[1];
+        String citta = parti[2];
+        String tipoCucina = parti[3];
+        String fasciaPrezzo = parti[4];
+        boolean delivery = Boolean.parseBoolean(parti[5]);
+        boolean prenotazione = Boolean.parseBoolean(parti[6]);
+        int prezzoMedio = Integer.parseInt(parti[7]);
+        String nazione = parti[8];
+        String indirizzo = parti[9];
+        double latitudine = Double.parseDouble(parti[10]);
+        double longitudine = Double.parseDouble(parti[11]);
+        String gestore = parti[12];
+
+        Ristorante ristorante = new Ristorante(
+                nome,
+                citta,
+                0,
+                tipoCucina,
+                fasciaPrezzo,
+                delivery,
+                prenotazione,
+                prezzoMedio,
+                nazione,
+                indirizzo,
+                latitudine,
+                longitudine,
+                gestore
+        );
+
+        boolean ok = ristoranteDAO.inserisciRistorante(ristorante);
+
+        if (ok) {
+            return "OK|RISTORANTE_AGGIUNTO";
+        }
+
+        return "ERRORE|Impossibile aggiungere ristorante";
     }
 }
