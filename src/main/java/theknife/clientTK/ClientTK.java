@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class ClientTK {
 
-    public static void main(String[] args) {
+    public static String inviaRichiesta(String richiesta) {
 
         try {
             Socket socket = new Socket("localhost", 12345);
@@ -22,17 +22,17 @@ public class ClientTK {
                     new InputStreamReader(socket.getInputStream())
             );
 
-            output.println("VISUALIZZA_RIEPILOGO|Kitchen");
-            String risposta = input.readLine();
+            output.println(richiesta);
 
-            System.out.println("Risposta ricevuta dal server:");
-            System.out.println(risposta);
+            String risposta = input.readLine();
 
             socket.close();
 
+            return risposta;
+
         } catch (IOException e) {
-            System.out.println("Errore connessione:");
             e.printStackTrace();
+            return "ERRORE|Connessione fallita";
         }
     }
 }
