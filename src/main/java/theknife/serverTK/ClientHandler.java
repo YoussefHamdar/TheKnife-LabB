@@ -49,7 +49,14 @@ public class ClientHandler implements Runnable {
         ) {
             String richiesta = input.readLine();
             System.out.println("Richiesta ricevuta dal client: " + richiesta);
-            String risposta = gestisciRichiesta(richiesta);
+            String risposta;
+
+            try {
+                risposta = gestisciRichiesta(richiesta);
+            } catch (Exception e) {
+                risposta = "ERRORE|Richiesta non valida: " + e.getMessage();
+            }
+
             output.println(risposta);
 
         } catch (IOException e) {
@@ -258,7 +265,17 @@ public class ClientHandler implements Runnable {
         String username = parti[1];
         String nomeRistorante = parti[2];
         String testo = parti[3];
-        int stelle = Integer.parseInt(parti[4]);
+        int stelle;
+
+        try {
+            stelle = Integer.parseInt(parti[4]);
+        } catch (NumberFormatException e) {
+            return "ERRORE|Le stelle devono essere un numero da 1 a 5";
+        }
+
+        if (stelle < 1 || stelle > 5) {
+            return "ERRORE|Le stelle devono essere comprese tra 1 e 5";
+        }
 
         Recensione recensione = new Recensione(
                 username,
@@ -330,7 +347,17 @@ public class ClientHandler implements Runnable {
         String username = parti[1];
         String nomeRistorante = parti[2];
         String nuovoTesto = parti[3];
-        int nuoveStelle = Integer.parseInt(parti[4]);
+        int nuoveStelle;
+
+        try {
+            nuoveStelle = Integer.parseInt(parti[4]);
+        } catch (NumberFormatException e) {
+            return "ERRORE|Le stelle devono essere un numero da 1 a 5";
+        }
+
+        if (nuoveStelle < 1 || nuoveStelle > 5) {
+            return "ERRORE|Le stelle devono essere comprese tra 1 e 5";
+        }
 
         boolean ok = recensioneDAO.modificaRecensione(
                 username,
@@ -372,7 +399,13 @@ public class ClientHandler implements Runnable {
             return "ERRORE|Formato risposta recensione non valido";
         }
 
-        int idRecensione = Integer.parseInt(parti[1]);
+        int idRecensione;
+
+        try {
+            idRecensione = Integer.parseInt(parti[1]);
+        } catch (NumberFormatException e) {
+            return "ERRORE|ID recensione deve essere un numero";
+        }
         String risposta = parti[2];
 
         boolean ok = recensioneDAO.rispondiRecensione(
@@ -396,13 +429,35 @@ public class ClientHandler implements Runnable {
         String citta = parti[2];
         String tipoCucina = parti[3];
         String fasciaPrezzo = parti[4];
-        boolean delivery = Boolean.parseBoolean(parti[5]);
-        boolean prenotazione = Boolean.parseBoolean(parti[6]);
-        int prezzoMedio = Integer.parseInt(parti[7]);
         String nazione = parti[8];
         String indirizzo = parti[9];
-        double latitudine = Double.parseDouble(parti[10]);
-        double longitudine = Double.parseDouble(parti[11]);
+        if (!parti[5].equalsIgnoreCase("true") && !parti[5].equalsIgnoreCase("false")) {
+            return "ERRORE|Delivery deve essere true oppure false";
+        }
+
+        if (!parti[6].equalsIgnoreCase("true") && !parti[6].equalsIgnoreCase("false")) {
+            return "ERRORE|Prenotazione deve essere true oppure false";
+        }
+
+        boolean delivery = Boolean.parseBoolean(parti[5]);
+        boolean prenotazione = Boolean.parseBoolean(parti[6]);
+
+        int prezzoMedio;
+        double latitudine;
+        double longitudine;
+
+        try {
+            prezzoMedio = Integer.parseInt(parti[7]);
+        } catch (NumberFormatException e) {
+            return "ERRORE|Prezzo medio deve essere un numero";
+        }
+
+        try {
+            latitudine = Double.parseDouble(parti[10]);
+            longitudine = Double.parseDouble(parti[11]);
+        } catch (NumberFormatException e) {
+            return "ERRORE|Latitudine e longitudine devono essere numeri";
+        }
         String gestore = parti[12];
 
         Ristorante ristorante = new Ristorante(
