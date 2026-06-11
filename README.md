@@ -1,55 +1,113 @@
-# TheKnife – Progetto Laboratorio A 🍴
+# TheKnife - Laboratorio Interdisciplinare B
 
-**Autori**:  
-- Youssef – Project Manager, Document & Quality Manager  
-- Federico Dellatorre – System Architect, Design Manager
+## Autori
 
----
+- Hamdar Youssef – Matricola 753832 – Sede Como
+- Dellatorre Federico – Matricola 755856 – Sede Como
 
-## 📌 Descrizione del Progetto
+## Descrizione
 
-TheKnife è un'applicazione Java che permette di esplorare e analizzare i ristoranti Michelin.  
-Il programma carica i dati da un file `.csv` e consente ricerche, filtri e statistiche.
+TheKnife è una piattaforma che consente di ricercare ristoranti e gestire recensioni, simulando alcune funzionalità della piattaforma TheFork.
 
-##  Ruoli utente
+L'applicazione è stata sviluppata nell'ambito del corso Laboratorio Interdisciplinare B dell'Università degli Studi dell'Insubria.
 
-- **Utente normale**: può registrarsi, recensire ristoranti, modificare o eliminare le proprie recensioni, gestire preferiti.  
-- **Ristoratore**: può rispondere alle recensioni ricevute e aggiungere nuovi ristoranti.  
-- **Ospite**: può cercare e consultare ristoranti e recensioni senza autenticazione.
+## Tecnologie Utilizzate
 
----
+- Java 21
+- PostgreSQL 18
+- JDBC
+- Maven
+- Swing
+- Socket TCP/IP
+- GitHub
 
-## 📁 Struttura del progetto
+## Architettura
 
-TheKnife/
-                       theknife          file java 
-                      data/                                              michelin_my_maps.csv           ristoranti          utenti    recensioni
-                      README.md                              descrizione del progetto
-                      autori.txt
+Il progetto è composto da:
 
----
+### ServerTK
 
-## 🔧 Requisiti tecnici
+Gestisce:
 
-- Java 17 o superiore  
-- IDE consigliato: IntelliJ IDEA / VS Code / Eclipse  
-- Funziona da terminale, compilando direttamente `Main.java`
+- Connessioni dei client
+- Accesso al database PostgreSQL
+- Registrazione utenti
+- Login utenti
+- Gestione ristoranti
+- Gestione recensioni
+- Gestione preferiti
 
----
+### ClientTK
 
-## 🚀 Avvio dell'applicazione
+Permette agli utenti di:
 
-- Apri e compila `Main.java` nella cartella `theknife/`
-- Esegui il programma direttamente dal tuo IDE o da terminale
-- I dati vengono letti e salvati automaticamente nella cartella `data/`
+- Registrarsi
+- Effettuare il login
+- Cercare ristoranti
+- Gestire preferiti
+- Inserire recensioni
+- Modificare recensioni
+- Eliminare recensioni
 
----
+### GUI
 
-##  File inclusi nella consegna
+Interfaccia grafica realizzata tramite Java Swing.
 
--  Codice completo `.java` con JavaDoc  
--  Cartella `data/` con file binari e CSV  
--  Documentazione: `README.md`, `autori.txt`, `manuale.pdf`
+## Database
 
----
+Database PostgreSQL:
 
+dbTK
+
+Tabelle principali:
+
+- utenti
+- ristoranti
+- recensioni
+- preferiti
+
+## Funzionalità Implementate
+
+### Utenti
+
+- Registrazione
+- Login
+- Ricerca ristoranti
+- Visualizzazione ristoranti
+- Gestione preferiti
+- Inserimento recensioni
+- Modifica recensioni
+- Eliminazione recensioni
+
+### Ristoratori
+
+- Inserimento ristoranti
+- Visualizzazione recensioni
+- Risposta alle recensioni
+- Visualizzazione riepilogo recensioni
+
+## Avvio del Server
+
+Eseguire:
+
+```bash
+java -jar serverTK.jar
+```
+
+## Avvio del Client
+
+Eseguire:
+
+```bash
+java -jar clientTK.jar
+```
+
+## Repository GitHub
+
+https://github.com/YoussefHamdar/TheKnife-LabB
+
+## Note
+
+Le password vengono memorizzate in forma cifrata.
+
+Il progetto utilizza PostgreSQL come DBMS e JDBC per l'accesso ai dati.
